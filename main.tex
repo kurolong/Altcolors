@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage[table]{xcolor}
+\usepackage{etoolbox}
+\usepackage{tabularx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+%Problem: \renewcommand*{\do}{} does not survive outside of cell
+%investigate \def
+
+%Format example: \colortable{c|c}{2}{red}{blue}{firstrow, middlerow, lastrow}
+\newcounter{rowcounter}
+\newif \ifcolorswitch
+\newcommand{\colortable}[5]{
+	\setcounter{rowcounter}{1}
+	\colorswitchtrue
+	\begin{tabular}{#1}
+		\renewcommand*{\do}[1]{
+			\ifnumcomp{rowcounter}{<}{#2}{
+				\stepcounter{rowcounter}
+			}{
+				\ifcolorswitch
+					\rowcolor{#3} ##1 \\
+					\colorswitchfalse
+				\else
+					\rowcolor{#4} ##1 \\
+					\colorswitchtrue
+				\fi
+			}
+			\hline
+			\stepcounter{rowcounter}
+		}
+		\docsvlist{#5}
+	\end{tabular}
+		
+}
+
+
+
+\begin{document}
+	
+	\noindent \\
+	\colortable{c|c}{2}{red}{blue}{a,b,c,d,e}
+\end{document}
