@@ -8,28 +8,55 @@
 %Problem: \renewcommand*{\do}{} does not survive outside of cell
 %investigate \def
 
+%LENGTH
+\newcounter{lengthcounter}
+\makeatletter
+\newcommand*{\length}[1]{%	%\@tempcnta\z@
+	\setcounter{lengthcounter}{0}
+	\@for\@tempa:=#1\do{\stepcounter{lengthcounter}}% %\the\@tempcnta%
+	\arabic{lengthcounter}
+}
+\makeatother
+
 %Format example: \colortable{c|c}{2}{red}{blue}{firstrow, middlerow, lastrow}
 \newcounter{rowcounter}
+\newcounter{defcounter}
+\newcounter{listlength}
 \newif \ifcolorswitch
+\newcommand{\renewdo}{}
 \newcommand{\colortable}[5]{
 	\setcounter{rowcounter}{1}
+	\setcounter{defcounter}{1}
+	\setcounter{listlength}{\numexpr{\length{#5}}}
+%	\renewcommand{\do}{\stepcounter{listlength}}
+%	\docsvlist{#5}
 	\colorswitchtrue
-	\begin{tabular}{#1}
+	\arabic{listlength}
+	\renewcommand{\renewdo}{
 		\renewcommand*{\do}[1]{
-			\ifnumcomp{rowcounter}{<}{#2}{
-				\stepcounter{rowcounter}
-			}{
-				\ifcolorswitch
-					\rowcolor{#3} ##1 \\
-					\colorswitchfalse
-				\else
-					\rowcolor{#4} ##1 \\
-					\colorswitchtrue
-				\fi
-			}
-			\hline
-			\stepcounter{rowcounter}
-		}
+			%			\ifnumcomp{rowcounter}{<}{#2}{
+			%				\stepcounter{rowcounter}
+			%			}{
+			%				\ifcolorswitch
+			%					\rowcolor{#3} ##1 \\
+			%					\colorswitchfalse
+			%				\else
+			%					\rowcolor{#4} ##1 \\
+			%					\colorswitchtrue
+			%				\fi
+			%			}
+			%			\hline
+			%			\stepcounter{rowcounter}
+			Dis & ####1  \\
+			\ifnumcomp{\value{defcounter}}{<}{\value{listlength}}{
+			%\ifnumcomp{\value{defcounter}}{<}{\length{#5}}{
+				\renewdo
+				\stepcounter{defcounter}
+			}{}
+		}	
+	}
+	\begin{tabular}{#1}
+		\renewdo
 		\docsvlist{#5}
 	\end{tabular}
 		
