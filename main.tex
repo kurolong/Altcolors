@@ -31,34 +31,31 @@
 \newcounter{rowcounter}
 \newcounter{defcounter}
 \newcounter{listlength}
-\newif \ifcolorswitch
+\newtoggle{colorswitch}
 \newcommand{\renewdo}{}
 \newcommand{\colortable}[5]{
 	\setcounter{rowcounter}{1}
 	\setcounter{defcounter}{1}
 	\setcounter{listlength}{0}%
 	
-	\makeatletter
 	\renewcommand*{\do}[1]{\stepcounter{listlength}} %\@gobble{##1}}%
 	\docsvlist{#5}
-	\makeatother
 	
-	\colorswitchtrue
+	\toggletrue{colorswitch}
 	\renewcommand{\renewdo}{
 		\renewcommand*{\do}[1]{
 			\ifnumcomp{\value{rowcounter}}{<}{#2}{
 				\stepcounter{rowcounter}
-				####1 \\
+				\raggedleft ####1 & something \\
 			}{
 				%Dis & ####1 \\
-				\ifcolorswitch
-					\rowcolor{#3} 
-					####1 \\
-					\colorswitchfalse
-				\else
-					\rowcolor{#4} ####1 \\
-					\colorswitchtrue
-				\fi
+				\iftoggle{colorswitch}{
+					\rowcolor{#3} \raggedleft ####1 & that\\
+					\togglefalse{colorswitch}
+				}{
+					\rowcolor{#4} \raggedleft ####1 & this\\
+					\toggletrue{colorswitch}
+				}
 			}
 			%Dis & ####1  \\
 			\ifnumcomp{\value{defcounter}}{<}{\value{listlength}}{
@@ -79,5 +76,5 @@
 \begin{document}
 	
 	Some Text \\
-	\colortable{c|c}{2}{red}{blue}{a & a2} %Dis & Row, Dat & Row, Another & Row, More & Rows, Even More & Rows, Final & Row}
+	\colortable{|l|c|}{2}{red}{blue}{a, b, c, d, e} %Dis & Row, Dat & Row, Another & Row, More & Rows, Even More & Rows, Final & Row}
 \end{document}
